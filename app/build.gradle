@@ -43,6 +43,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         all {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.keyConfig
         }
     }
@@ -61,12 +63,18 @@ android {
 //    }
     buildFeatures {
         viewBinding true
+        mlModelBinding true
     }
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ["../openCV3412/native/libs"]
-        }
+
+    aaptOptions {
+        noCompress "tflite"
     }
+//    sourceSets {
+//        main {
+////            jniLibs.srcDirs = ["../openCV3412/native/libs"]
+//            jniLibs.srcDirs = ["src/main/jniLibs"]
+//        }
+//    }
 }
 
 dependencies {
@@ -76,8 +84,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
 //    implementation 'com.quickbirdstudios:opencv:3.4.5'
-    implementation 'com.google.mlkit:object-detection-common:17.0.0'
-    implementation project(path: ':openCV3412')
+//    implementation 'com.google.mlkit:object-detection-common:17.0.0'
+//    implementation project(path: ':openCV3412')
+    implementation 'org.tensorflow:tensorflow-lite-support:0.1.0'
+    implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
+    implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
+    implementation 'org.tensorflow:tensorflow-lite-task-vision:0.2.0'
+    implementation 'com.google.mlkit:object-detection:16.2.7'
 
     def nav_version = "2.3.5"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"

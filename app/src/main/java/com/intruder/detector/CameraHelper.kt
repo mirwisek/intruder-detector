@@ -14,6 +14,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.abs
@@ -23,7 +24,7 @@ class CameraHelper(
     private val owner: AppCompatActivity,
     private val context: Context,
     private val viewFinder: PreviewView,
-    private val onImageReceived: (image: Image) -> Unit
+    private val onImageReceived: (image: ImageProxy) -> Unit
 ) {
 
     private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
@@ -115,7 +116,7 @@ class CameraHelper(
             .build()
     }
 
-    private fun getOpenCVAnalyzer(onImageReceived: (image: Image) -> Unit): ImageAnalysis {
+    private fun getOpenCVAnalyzer(onImageReceived: (proxy: ImageProxy) -> Unit): ImageAnalysis {
         val analyzer = ImageAnalysis.Builder()
             .setTargetAspectRatio(aspectRatio())
             .setTargetRotation(viewFinder.display.rotation)
@@ -130,14 +131,11 @@ class CameraHelper(
         return analyzer
     }
 
-    private class OpenCVAnalyzer(val listener: (image: Image) -> Unit) : ImageAnalysis.Analyzer {
-//        private val listeners = ArrayList<BarcodeListener>().apply { listener?.let { add(it) } }
+    private class OpenCVAnalyzer(val listener: (proxy: ImageProxy) -> Unit) : ImageAnalysis.Analyzer {
 
-        @SuppressLint("UnsafeExperimentalUsageError", "UnsafeOptInUsageError")
         override fun analyze(imageProxy: ImageProxy) {
-            imageProxy.image?.let { mediaImage ->
-                listener.invoke(mediaImage)
-            }
+            log("Sent image")
+            listener.invoke(imageProxy)
 
 //            if (mediaImage != null) {
 //                val image =
@@ -153,7 +151,6 @@ class CameraHelper(
 //                    .addOnFailureListener {
 //                        imageProxy.close()
 //                    }
-            imageProxy.close()
 //            }
         }
     }
